@@ -1,0 +1,12 @@
+#Object files and Libraries
+**/obj
+**/bin
+
+#Mac
+.DS_Store
+
+#Visual Studio
+.vs/
+
+#Database
+**/*.db*
