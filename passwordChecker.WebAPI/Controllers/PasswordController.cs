@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using passwordChecker.Core.Services.Interfaces;
+using passwordChecker.WebAPI.Messages.Responses;
 
 namespace passwordChecker.WebAPI.Controllers
 {
@@ -15,14 +16,15 @@ namespace passwordChecker.WebAPI.Controllers
         }
         
         [HttpPost("CheckPassword")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PasswordStrengthResponse),StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult CheckPassword(string password)
         {
             try
             {
                 var passwordStrength = PasswordChecker.GetPasswordStrength(password);
-                return Ok();
+                var passwordStrengthResponse = passwordStrength.GetResponseMessage();
+                return Ok(passwordStrengthResponse);
             }
             catch(Exception ex)
             {
