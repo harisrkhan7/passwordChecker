@@ -30,7 +30,7 @@ namespace passwordChecker.WebAPI.Messages.Responses
         /// </summary>
         /// <param name="passwordStrength">Business object to convert</param>
         /// <returns>Response message</returns>
-        public static PasswordStrengthResponse GetResponseMessage(this PasswordStrength passwordStrength)
+        public static PasswordStrengthResponse GetResponseMessage( this PasswordStrength passwordStrength)
         {
             var passwordStrengthResponse = new PasswordStrengthResponse();
 
@@ -38,6 +38,9 @@ namespace passwordChecker.WebAPI.Messages.Responses
             {
                 case PasswordStrength.Blank:
                     passwordStrengthResponse = PasswordStrengthResponse.Blank;
+                    break;
+                case PasswordStrength.Weak:
+                    passwordStrengthResponse = PasswordStrengthResponse.Weak;
                     break;
                 case PasswordStrength.Medium:
                     passwordStrengthResponse = PasswordStrengthResponse.Medium;
@@ -48,6 +51,8 @@ namespace passwordChecker.WebAPI.Messages.Responses
                 case PasswordStrength.VeryStrong:
                     passwordStrengthResponse = PasswordStrengthResponse.VeryStrong;
                     break;
+                default:
+                    throw new Exception("Could not parse to response message! Case = " + passwordStrength);
             }
 
             return passwordStrengthResponse;
