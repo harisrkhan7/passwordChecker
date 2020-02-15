@@ -15,7 +15,7 @@ namespace passwordChecker.Core
         /// the IoC container. 
         /// </summary>
         /// <param name="services">Service collection to update</param>
-        public static void ConfigureCore(this IServiceCollection services)
+        public static void AddPasswordCheckerCore(this IServiceCollection services)
         {
             services.AddScoped<IPasswordChecker, PasswordChecker>();
         }

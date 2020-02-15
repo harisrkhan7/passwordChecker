@@ -1,0 +1,63 @@
+{
+  "x-generator": "NSwag v13.2.3.0 (NJsonSchema v10.1.5.0 (Newtonsoft.Json v9.0.0.0))",
+  "swagger": "2.0",
+  "info": {
+    "title": "Password Checker API",
+    "version": "v1"
+  },
+  "produces": [
+    "text/plain",
+    "application/json",
+    "text/json"
+  ],
+  "paths": {
+    "/CheckPassword": {
+      "post": {
+        "tags": [
+          "Password"
+        ],
+        "operationId": "Password_CheckPassword",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "password",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PasswordStrengthResponse"
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PasswordStrengthResponse": {
+      "type": "integer",
+      "description": "",
+      "x-enumNames": [
+        "Blank",
+        "Weak",
+        "Medium",
+        "Strong",
+        "VeryStrong"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  }
+}

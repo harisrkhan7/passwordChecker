@@ -11,14 +11,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using passwordChecker.Core;
+using passwordChecker.WebAPI.NSwag;
 
 namespace passwordChecker.WebAPI
 {
     public class Startup
     {
-        private const string swaggerVersion = "v3";
+        private const string swaggerVersion = "v1";
         private const string swaggerTitle = "Password Checker API";
-        private const string swaggerDocName = "v3";
+        private const string swaggerDocName = "v1";
 
         public Startup(IConfiguration configuration)
         {
@@ -32,14 +33,16 @@ namespace passwordChecker.WebAPI
         {
             services.AddControllers();
 
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
+            // Register the Swagger services
+            services.AddSwaggerDocument(settings =>
             {
-                c.SwaggerDoc(swaggerDocName, new Microsoft.OpenApi.Models.OpenApiInfo { Title = swaggerTitle, Version = swaggerVersion });
-                
+                settings.Version = swaggerVersion;
+                settings.Title = swaggerTitle;
+                settings.DocumentName = swaggerDocName;
+                settings.DocumentProcessors.Add(new SwaggerJsonWriter());               
             });
 
-            services.ConfigureCore();
+            services.AddPasswordCheckerCore();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,21 +52,13 @@ namespace passwordChecker.WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            string swaggerEndPoint = $"../swagger/{swaggerDocName}/swagger.json";
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint(swaggerEndPoint, swaggerTitle);
-                c.RoutePrefix = string.Empty;
-            });
-
+           
             app.UseHttpsRedirection();
+
+            // Register the Swagger generator and the Swagger UI middlewares
+            app.UseOpenApi();
+
+            app.UseSwaggerUi3(options => options.Path = "");
 
             app.UseRouting();
 
