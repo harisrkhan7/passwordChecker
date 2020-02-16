@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using passwordChecker.ConsoleApp.BusinessObjects;
 using passwordChecker.WebAPI.Client;
 
 namespace passwordChecker.ConsoleApp
@@ -19,13 +20,14 @@ namespace passwordChecker.ConsoleApp
             PasswordCheckerAPI = passwordCheckerAPI;
         }
 
-        private async Task<int> GetPasswordStrength()
+        private async Task<PasswordStrength> GetPasswordStrength()
         {
             var failure = new Exception(FailureErrorMessage);
-            int? passwordStrength;
+            PasswordStrength passwordStrengthEnum;
             try
-            {
-                passwordStrength = await PasswordCheckerAPI.Password.CheckPasswordAsync(Password);
+            {     
+                var passwordStrength = await PasswordCheckerAPI.Password.CheckPasswordAsync(Password);
+                passwordStrengthEnum = PasswordStrengthExtensions.ToPasswordStrength(passwordStrength);
             }
             catch (Exception ex)
             {
@@ -33,7 +35,7 @@ namespace passwordChecker.ConsoleApp
                 throw failure;
             }
 
-            return (passwordStrength ?? throw failure);
+            return passwordStrengthEnum;
         }
 
         private void PromptForPassword()
@@ -47,7 +49,7 @@ namespace passwordChecker.ConsoleApp
             try
             {
                 var passwordStrength = await GetPasswordStrength();
-                Console.WriteLine($"Password strength is {passwordStrength}!");
+                Console.WriteLine($"Password strength is {passwordStrength.GetDescription()}!");
             }
             catch (Exception ex)
             {
