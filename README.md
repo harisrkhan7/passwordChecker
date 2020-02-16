@@ -75,7 +75,7 @@ The following projects target .Net Core 3.1 framework as it is the latest
 
 ## 5. Known Improvements
 
-### Client Usage
+### 5.1 Client Usage
 
 * The client was generated using AutoRest and updated in each branch. This can be automated by features like generate on each build. 
 * The client project was directly referenced by the Console Application. This can be avoided by the use of **NuGet package** in an **Enterprise NuGet Feed**.
