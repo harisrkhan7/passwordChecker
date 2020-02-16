@@ -33,3 +33,52 @@ The password does not contain any characters i.e. null.
 * **8** or more characters in length
 * Has characters from all **4** of the **4** groups
 
+## Branching Structure
+
+The baseline version and the improved version are both in a runnable state for comparison in two different branches stated as follows:- 
+
+* Task 1 - Master Branch
+* Task 2 - feature/checkDataBreach Branch
+
+## Program Running Instructions
+
+The solution file has been setup to run multiple projects at once. Cloning any branch followed by building and running the solution locally would:-
+
+* Launch the web application at the set ports
+* Launch the console application and connect it to the web application
+
+**Note**: Each branch also has a test project for unit testing controllers of that branch. The unit tests were designed using Boundary Value Analysis to ensure maximum coverage.
+
+### Makefile
+
+A basic makefile with the following commands has been setup to aid development:- 
+
+* **make run_webapi** to run Web API only
+* **make run_console_application** to run Console Application only
+* **make test_webapi** to run all the Web API tests 
+* **make generate_client** to generate a new client from the swaager.json. This would require Node and Autorest to be installed on the local machine. 
+
+## Compatiblity 
+
+Follwing projects target both .Net Standard 2.1 and .Net Core 3.1 frameworks:-
+
+* All the WebAPI Libraries
+* The Web API Client Library
+* The Console Application
+
+The following projects target .Net Core 3.1 framework as it is the latest
+
+* The Web API 
+* The Functional Tests for the Web API 
+
+**Note:** The core parts of the projects supporting both frameworks ensures maximum flexibility.
+
+## Known Improvements
+
+### Client Usage
+
+* The client was generated using AutoRest and updated in each branch. This can be automated by features like generate on each build. 
+* The client project was directly referenced by the Console Application. This can be avoided by the use of **NuGet package** in an **Enterprise NuGet Feed**.
+
+
+
