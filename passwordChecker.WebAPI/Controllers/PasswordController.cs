@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using passwordChecker.Core.Services.Interfaces;
@@ -10,9 +12,13 @@ namespace passwordChecker.WebAPI.Controllers
     {
         IPasswordChecker PasswordChecker;
 
-        public PasswordController(IPasswordChecker passwordChecker)
+        IBreachDataCollector BreachDataCollector;
+
+
+        public PasswordController(IPasswordChecker passwordChecker, IBreachDataCollector breachDataCollector)
         {
             PasswordChecker = passwordChecker;
+            BreachDataCollector = breachDataCollector;
         }
         
         [HttpPost("CheckPassword")]
@@ -31,6 +37,23 @@ namespace passwordChecker.WebAPI.Controllers
                 var error = ResponseManager.GetErrorResponse(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError,error);
             }
+        }
+
+        [HttpGet("GetBreaches")]
+        [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBreaches(string password)
+        {
+            try
+            {
+                var count = await BreachDataCollector.GetBreachCount(password);
+                return Ok(count);
+            }
+            catch (Exception ex)
+            {
+                var error = ResponseManager.GetErrorResponse(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, error);
+            }            
         }
     }
 }

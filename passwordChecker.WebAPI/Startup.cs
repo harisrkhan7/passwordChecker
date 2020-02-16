@@ -42,7 +42,8 @@ namespace passwordChecker.WebAPI
                 settings.DocumentProcessors.Add(new SwaggerJsonWriter());               
             });
 
-            services.AddPasswordCheckerCore();
+            
+            services.AddPasswordCheckerCore(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

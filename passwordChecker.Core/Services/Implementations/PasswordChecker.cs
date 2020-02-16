@@ -14,7 +14,7 @@ namespace passwordChecker.Core.Services.Implementations
         {
         }
 
-        private const int standardPasswordLength = 8;
+        private const int STANDARD_PASSWORD_LENGTH = 8;
         
         public PasswordStrength GetPasswordStrength(string password)
         {
@@ -22,7 +22,7 @@ namespace passwordChecker.Core.Services.Implementations
             {
                 return PasswordStrength.Blank;
             }
-            else if(password.Length < standardPasswordLength)
+            else if(password.Length < STANDARD_PASSWORD_LENGTH)
             {
                 return PasswordStrength.Weak;
             }

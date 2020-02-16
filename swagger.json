@@ -42,6 +42,39 @@
           }
         }
       }
+    },
+    "/GetBreaches": {
+      "get": {
+        "tags": [
+          "Password"
+        ],
+        "operationId": "Password_GetBreaches",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "password",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "500": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
