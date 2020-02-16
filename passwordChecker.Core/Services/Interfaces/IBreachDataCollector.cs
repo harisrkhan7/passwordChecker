@@ -13,6 +13,12 @@ namespace passwordChecker.Core.Services.Interfaces
     /// </summary>
     public interface IBreachDataCollector
     {
+        /// <summary>
+        /// Calls the web api to get the number of times
+        /// this password has appeared in breaches!
+        /// </summary>
+        /// <param name="password">Password to check</param>
+        /// <returns>Number of times this password has appeared in breaches</returns>
         public Task<int> GetBreachCountAsync(string password);
     }
 }

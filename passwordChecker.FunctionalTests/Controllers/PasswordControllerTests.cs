@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
 using passwordChecker.Core.Services.Implementations;
 using passwordChecker.FunctionalTests.MockObjects;
 using passwordChecker.WebAPI.Controllers;
@@ -15,30 +18,44 @@ namespace passwordChecker.FunctionalTests.Controllers
 
         private int upperBoundaryValue = 8;
 
+        private string dataBreachUrl = @"https://api.pwnedpasswords.com/";
+
         /// <summary>
         /// Tests with a null password. 
         /// </summary>        
         [Trait("Blank", "NoBoundary")]
         [Fact]
-        public void BlankPassword_Null()
+        public async Task BlankPassword_Null()
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
 
             //Act
             string password = null;
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Blank, passwordStrength);
+            Assert.Equal(PasswordStrength.Blank, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -46,25 +63,38 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// </summary>
         [Trait("Blank", "NoBoundary")]
         [Fact]
-        public void BlankPassword_EmptyString()
+        public async Task BlankPassword_EmptyString()
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
 
             //Act
             string password = "";
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Blank, passwordStrength);
+            Assert.Equal(PasswordStrength.Blank, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
+
         }
 
         /// <summary>
@@ -78,25 +108,38 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Uppercase)]
         [InlineData(CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Digit)]
-        public void SameCharacter_LessThan8Characters(CharacterGroup characterGroup)
+        public async Task SameCharacter_LessThan8Characters(CharacterGroup characterGroup)
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
 
             //Act
             string password = Password.GetPassword(characterGroup, lowerBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -111,25 +154,38 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Uppercase)]
         [InlineData(CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Digit)]
-        public void SameCharacter_GreaterThanOrEqualTo8Characters(CharacterGroup characterGroup)
+        public async Task SameCharacter_GreaterThanOrEqualTo8Characters(CharacterGroup characterGroup)
         {
-            //Arrange 
+            ///Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
 
             //Act
             string password = Password.GetPassword(characterGroup, upperBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
 
@@ -147,11 +203,24 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.Digit)]
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Digit, CharacterGroup.SpecialCharacter)]
-        public void TwoCharacterGroups_LessThan8Characters(CharacterGroup characterGroup1, CharacterGroup characterGroup2)
+        public async Task TwoCharacterGroups_LessThan8Characters(CharacterGroup characterGroup1, CharacterGroup characterGroup2)
         {
             //Arrange 
+            //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
             var charGroups = new List<CharacterGroup>();
             charGroups.Add(characterGroup1);
             charGroups.Add(characterGroup2);
@@ -159,16 +228,17 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, lowerBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -186,11 +256,23 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.Digit)]
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Digit, CharacterGroup.SpecialCharacter)]
-        public void TwoCharacterGroups_GreaterThanorEqualTo8Characters(CharacterGroup characterGroup1, CharacterGroup characterGroup2)
+        public async Task TwoCharacterGroups_GreaterThanorEqualTo8Characters(CharacterGroup characterGroup1, CharacterGroup characterGroup2)
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
             var charGroups = new List<CharacterGroup>();
             charGroups.Add(characterGroup1);
             charGroups.Add(characterGroup2);
@@ -198,16 +280,17 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, upperBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Medium, passwordStrength);
+            Assert.Equal(PasswordStrength.Medium, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -223,12 +306,24 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.Uppercase, CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.SpecialCharacter, CharacterGroup.Digit)]
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.Digit, CharacterGroup.SpecialCharacter)]
-        public void ThreeCharacterGroups_LessThan8Characters(CharacterGroup characterGroup1,
+        public async Task ThreeCharacterGroups_LessThan8Characters(CharacterGroup characterGroup1,
             CharacterGroup characterGroup2, CharacterGroup characterGroup3)
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
             var charGroups = new List<CharacterGroup>();
             charGroups.Add(characterGroup1);
             charGroups.Add(characterGroup2);
@@ -237,16 +332,17 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, lowerBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -263,12 +359,25 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.Uppercase, CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.SpecialCharacter, CharacterGroup.Digit)]
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.Digit, CharacterGroup.SpecialCharacter)]
-        public void ThreeCharacterGroups_GreaterThanorEqualTo8Characters(CharacterGroup characterGroup1,
+        public async Task ThreeCharacterGroups_GreaterThanorEqualTo8Characters(CharacterGroup characterGroup1,
             CharacterGroup characterGroup2, CharacterGroup characterGroup3)
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
+
             var charGroups = new List<CharacterGroup>();
             charGroups.Add(characterGroup1);
             charGroups.Add(characterGroup2);
@@ -277,16 +386,17 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, upperBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Strong, passwordStrength);
+            Assert.Equal(PasswordStrength.Strong, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -295,11 +405,24 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// </summary>
         [Trait("FourCharacterGroups", "LowerBoundary")]
         [Fact]
-        public void FourCharacterGroups_LessThan8Characters()
+        public async Task FourCharacterGroups_LessThan8Characters()
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
+
             var charGroups = new List<CharacterGroup>();
             charGroups.Add(CharacterGroup.Lowercase);
             charGroups.Add(CharacterGroup.Uppercase);
@@ -309,16 +432,17 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, lowerBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
 
         /// <summary>
@@ -328,11 +452,25 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// </summary>
         [Trait("FourCharacterGroups", "Upper")]
         [Fact]
-        public void FourCharacterGroups_GreaterThanOrEqualTo8Characters()
+        public async Task FourCharacterGroups_GreaterThanOrEqualTo8Characters()
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
-            var controller = new PasswordController(passwordChecker);
+            var httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(dataBreachUrl)
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+
+            var breachDataCollector = new BreachDataCollector(httpClientFactory.Object);
+
+            var controller = new PasswordController(passwordChecker, breachDataCollector);
+
+
             var charGroups = new List<CharacterGroup>();
             charGroups.Add(CharacterGroup.Lowercase);
             charGroups.Add(CharacterGroup.Uppercase);
@@ -342,16 +480,17 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, upperBoundaryValue);
 
-            var result = controller.GetPasswordStrength(password);
+            var result = await controller.CheckPasswordAsync(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrength)okObjectResult.Value;
+            var passwordResponse = (PasswordResponse)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrength.VeryStrong, passwordStrength);
+            Assert.Equal(PasswordStrength.VeryStrong, passwordResponse.PasswordStrength);
+            Assert.True(passwordResponse.BreachCount >= 0);
         }
     }
 }

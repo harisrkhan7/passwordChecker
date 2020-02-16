@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.Cryptography;
@@ -24,6 +24,10 @@ namespace passwordChecker.Core.Services.Implementations
         {
             try
             {
+                if(null == password || "" == password)
+                {
+                    return 0;
+                }
 
                 var hash = ComputeHash(password);
 

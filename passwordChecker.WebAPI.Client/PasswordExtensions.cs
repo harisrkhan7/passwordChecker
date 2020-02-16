@@ -6,6 +6,7 @@
 
 namespace passwordChecker.WebAPI.Client
 {
+    using Models;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace passwordChecker.WebAPI.Client
             /// </param>
             /// <param name='password'>
             /// </param>
-            public static int? CheckPassword(this IPassword operations, string password = default(string))
+            public static object CheckPassword(this IPassword operations, string password = default(string))
             {
                 return operations.CheckPasswordAsync(password).GetAwaiter().GetResult();
             }
@@ -32,9 +33,61 @@ namespace passwordChecker.WebAPI.Client
             /// <param name='cancellationToken'>
             /// The cancellation token.
             /// </param>
-            public static async Task<int?> CheckPasswordAsync(this IPassword operations, string password = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            public static async Task<object> CheckPasswordAsync(this IPassword operations, string password = default(string), CancellationToken cancellationToken = default(CancellationToken))
             {
                 using (var _result = await operations.CheckPasswordWithHttpMessagesAsync(password, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='password'>
+            /// </param>
+            public static object GetPasswordStrength(this IPassword operations, string password = default(string))
+            {
+                return operations.GetPasswordStrengthAsync(password).GetAwaiter().GetResult();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='password'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> GetPasswordStrengthAsync(this IPassword operations, string password = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetPasswordStrengthWithHttpMessagesAsync(password, null, cancellationToken).ConfigureAwait(false))
+                {
+                    return _result.Body;
+                }
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='password'>
+            /// </param>
+            public static object GetBreaches(this IPassword operations, string password = default(string))
+            {
+                return operations.GetBreachesAsync(password).GetAwaiter().GetResult();
+            }
+
+            /// <param name='operations'>
+            /// The operations group for this extension method.
+            /// </param>
+            /// <param name='password'>
+            /// </param>
+            /// <param name='cancellationToken'>
+            /// The cancellation token.
+            /// </param>
+            public static async Task<object> GetBreachesAsync(this IPassword operations, string password = default(string), CancellationToken cancellationToken = default(CancellationToken))
+            {
+                using (var _result = await operations.GetBreachesWithHttpMessagesAsync(password, null, cancellationToken).ConfigureAwait(false))
                 {
                     return _result.Body;
                 }

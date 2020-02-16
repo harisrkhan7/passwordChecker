@@ -3,6 +3,9 @@ using System.ComponentModel;
 
 namespace passwordChecker.Core.BusinessObjects.Enums
 {
+    /// <summary>
+    /// All the character groups for password checks
+    /// </summary>
     public enum CharacterGroup
     {
         [Description("Lowercase")]

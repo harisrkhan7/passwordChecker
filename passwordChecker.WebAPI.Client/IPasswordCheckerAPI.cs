@@ -6,6 +6,7 @@
 
 namespace passwordChecker.WebAPI.Client
 {
+    using Models;
     using Newtonsoft.Json;
 
     /// <summary>
