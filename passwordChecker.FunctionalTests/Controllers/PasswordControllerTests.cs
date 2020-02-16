@@ -118,7 +118,7 @@ namespace passwordChecker.FunctionalTests.Controllers
             var controller = new PasswordController(passwordChecker);
 
             //Act
-            string password = Password.GetPassword(CharacterGroup.Lowercase, upperBoundaryValue);
+            string password = Password.GetPassword(characterGroup, upperBoundaryValue);
 
             var result = controller.CheckPassword(password);
 
