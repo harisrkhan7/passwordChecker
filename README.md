@@ -1,7 +1,7 @@
 # passwordChecker
 An API endpoint to check password strength and a console application to consume it. 
 
-## Password Checking Criteria
+## 1. Password Checking Criteria
 
 Password strength is determined based on the presence of one or more groups of characters and password length. The groups being:- 
 
@@ -14,33 +14,33 @@ Password strength is determined based on the presence of one or more groups of c
 
 Following are the categories of password strength with their set criteria:-
 
-### 1. Blank
+### 1.1 Blank
 The password does not contain any characters i.e. null. 
 
-### 2. Weak Password
+### 1.2 Weak Password
 * Less than **8** characters in length OR  
 * Has characters from only **1** of the **4** groups
 
-### 3. Medium Password
+### 1.3 Medium Password
 * **8** or more characters in length
 * Has characters from at least **2** of the **4** groups
 
-### 4. Strong Password
+### 1.4 Strong Password
 * **8** or more characters in length
 * Has characters from at least **3** of the **4** groups
 
-### 5. Very Strong Password
+### 1.5 Very Strong Password
 * **8** or more characters in length
 * Has characters from all **4** of the **4** groups
 
-## Branching Structure
+## 2. Branching Structure
 
 The baseline version and the improved version are both in a runnable state for comparison in two different branches stated as follows:- 
 
 * Task 1 - Master Branch
 * Task 2 - feature/checkDataBreach Branch
 
-## Program Running Instructions
+## 3. Program Running Instructions
 
 The solution file has been setup to run multiple projects at once. Cloning any branch followed by building and running the solution locally would:-
 
@@ -49,7 +49,7 @@ The solution file has been setup to run multiple projects at once. Cloning any b
 
 **Note**: Each branch also has a test project for unit testing controllers of that branch. The unit tests were designed using Boundary Value Analysis to ensure maximum coverage.
 
-### Makefile
+### 3.1 Makefile
 
 A basic makefile with the following commands has been setup to aid development:- 
 
@@ -58,7 +58,7 @@ A basic makefile with the following commands has been setup to aid development:-
 * **make test_webapi** to run all the Web API tests 
 * **make generate_client** to generate a new client from the swaager.json. This would require Node and Autorest to be installed on the local machine. 
 
-## Compatiblity 
+## 4. Compatiblity 
 
 Follwing projects target both .Net Standard 2.1 and .Net Core 3.1 frameworks:-
 
@@ -73,7 +73,7 @@ The following projects target .Net Core 3.1 framework as it is the latest
 
 **Note:** The core parts of the projects supporting both frameworks ensures maximum flexibility.
 
-## Known Improvements
+## 5. Known Improvements
 
 ### Client Usage
 
