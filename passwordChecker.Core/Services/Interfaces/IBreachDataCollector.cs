@@ -13,6 +13,6 @@ namespace passwordChecker.Core.Services.Interfaces
     /// </summary>
     public interface IBreachDataCollector
     {
-        public Task<int> GetBreachCount(string password);
+        public Task<int> GetBreachCountAsync(string password);
     }
 }

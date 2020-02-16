@@ -19,7 +19,7 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// Tests with a null password. 
         /// </summary>        
         [Trait("Blank", "NoBoundary")]
-        [Fact]        
+        [Fact]
         public void BlankPassword_Null()
         {
             //Arrange 
@@ -29,16 +29,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = null;
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Blank, passwordStrength);
+            Assert.Equal(PasswordStrength.Blank, passwordStrength);
         }
 
         /// <summary>
@@ -55,16 +55,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = "";
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Blank, passwordStrength);
+            Assert.Equal(PasswordStrength.Blank, passwordStrength);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// character group with less than the minimum required length.
         /// </summary>
         /// <param name="characterGroup">CharacterGroup to use</param>
-        [Trait("SameCharacter","LowerBoundary")]
+        [Trait("SameCharacter", "LowerBoundary")]
         [Theory]
         [InlineData(CharacterGroup.Lowercase)]
         [InlineData(CharacterGroup.Uppercase)]
@@ -87,16 +87,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(characterGroup, lowerBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse) okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordStrength);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Digit)]
         public void SameCharacter_GreaterThanOrEqualTo8Characters(CharacterGroup characterGroup)
-        { 
+        {
             //Arrange 
             var passwordChecker = new PasswordChecker();
             var controller = new PasswordController(passwordChecker);
@@ -120,16 +120,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(characterGroup, upperBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordStrength);
         }
 
 
@@ -141,12 +141,12 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// <param name="characterGroup2">Character group to use</param>
         [Trait("TwoCharacterGroups", "LowerBoundary")]
         [Theory]
-        [InlineData(CharacterGroup.Lowercase,CharacterGroup.Uppercase)]
+        [InlineData(CharacterGroup.Lowercase, CharacterGroup.Uppercase)]
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.Digit)]
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.SpecialCharacter)]
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.Digit)]
-        [InlineData(CharacterGroup.Uppercase,CharacterGroup.SpecialCharacter)]
-        [InlineData(CharacterGroup.Digit,CharacterGroup.SpecialCharacter)]
+        [InlineData(CharacterGroup.Uppercase, CharacterGroup.SpecialCharacter)]
+        [InlineData(CharacterGroup.Digit, CharacterGroup.SpecialCharacter)]
         public void TwoCharacterGroups_LessThan8Characters(CharacterGroup characterGroup1, CharacterGroup characterGroup2)
         {
             //Arrange 
@@ -159,16 +159,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, lowerBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordStrength);
         }
 
         /// <summary>
@@ -198,16 +198,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, upperBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Medium, passwordStrength);
+            Assert.Equal(PasswordStrength.Medium, passwordStrength);
         }
 
         /// <summary>
@@ -224,7 +224,7 @@ namespace passwordChecker.FunctionalTests.Controllers
         [InlineData(CharacterGroup.Lowercase, CharacterGroup.SpecialCharacter, CharacterGroup.Digit)]
         [InlineData(CharacterGroup.Uppercase, CharacterGroup.Digit, CharacterGroup.SpecialCharacter)]
         public void ThreeCharacterGroups_LessThan8Characters(CharacterGroup characterGroup1,
-            CharacterGroup characterGroup2,CharacterGroup characterGroup3)
+            CharacterGroup characterGroup2, CharacterGroup characterGroup3)
         {
             //Arrange 
             var passwordChecker = new PasswordChecker();
@@ -237,16 +237,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, lowerBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordStrength);
         }
 
         /// <summary>
@@ -277,16 +277,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, upperBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Strong, passwordStrength);
+            Assert.Equal(PasswordStrength.Strong, passwordStrength);
         }
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace passwordChecker.FunctionalTests.Controllers
         /// character group with less than the minimum required length.
         /// </summary>
         [Trait("FourCharacterGroups", "LowerBoundary")]
-        [Fact]        
+        [Fact]
         public void FourCharacterGroups_LessThan8Characters()
         {
             //Arrange 
@@ -309,16 +309,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, lowerBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.Weak, passwordStrength);
+            Assert.Equal(PasswordStrength.Weak, passwordStrength);
         }
 
         /// <summary>
@@ -342,16 +342,16 @@ namespace passwordChecker.FunctionalTests.Controllers
             //Act
             string password = Password.GetPassword(charGroups, upperBoundaryValue);
 
-            var result = controller.CheckPassword(password);
+            var result = controller.GetPasswordStrength(password);
 
             //Assert
 
             var okObjectResult = result as OkObjectResult;
 
-            var passwordStrength = (PasswordStrengthResponse)okObjectResult.Value;
+            var passwordStrength = (PasswordStrength)okObjectResult.Value;
 
             Assert.NotNull(okObjectResult);
-            Assert.Equal(PasswordStrengthResponse.VeryStrong, passwordStrength);
+            Assert.Equal(PasswordStrength.VeryStrong, passwordStrength);
         }
     }
 }

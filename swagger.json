@@ -30,7 +30,39 @@
             "x-nullable": false,
             "description": "",
             "schema": {
-              "$ref": "#/definitions/PasswordStrengthResponse"
+              "$ref": "#/definitions/PasswordResponse"
+            }
+          },
+          "500": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "/GetPasswordStrength": {
+      "post": {
+        "tags": [
+          "Password"
+        ],
+        "operationId": "Password_GetPasswordStrength",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "password",
+            "in": "query",
+            "x-nullable": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "x-nullable": false,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/PasswordStrength"
             }
           },
           "500": {
@@ -78,7 +110,23 @@
     }
   },
   "definitions": {
-    "PasswordStrengthResponse": {
+    "PasswordResponse": {
+      "type": "object",
+      "required": [
+        "passwordStrength",
+        "breachCount"
+      ],
+      "properties": {
+        "passwordStrength": {
+          "$ref": "#/definitions/PasswordStrength"
+        },
+        "breachCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "PasswordStrength": {
       "type": "integer",
       "description": "",
       "x-enumNames": [

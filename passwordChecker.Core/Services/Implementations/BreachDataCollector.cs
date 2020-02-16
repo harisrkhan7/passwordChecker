@@ -20,7 +20,7 @@ namespace passwordChecker.Core.Services.Implementations
             _clientFactory = clientFactory;
         }
 
-        public async Task<int> GetBreachCount(string password)
+        public async Task<int> GetBreachCountAsync(string password)
         {
             try
             {
@@ -31,8 +31,8 @@ namespace passwordChecker.Core.Services.Implementations
                 var hashPrefix = hash.Substring(startIndex: 0, length: 5);
                 var hashSuffix = hash.Substring(startIndex: 5, length: 35);
 
-                var breaches = await GetMatchingBreaches(hashPrefix);
-                var breachDictionary = ParseMatchingBreaches(breaches);
+                var breaches = await GetMatchingBreachesAsync(hashPrefix);
+                var breachDictionary = ParseMatchingBreachesAsync(breaches);
 
                 var totalBreaches = ComputeTotalBreaches(breachDictionary, hashSuffix);
                 return totalBreaches;
@@ -56,7 +56,7 @@ namespace passwordChecker.Core.Services.Implementations
             return hash;
         }
 
-        private async Task<string[]> GetMatchingBreaches(string hash)
+        private async Task<string[]> GetMatchingBreachesAsync(string hash)
         {
             string[] breachesList;
             try
@@ -80,7 +80,7 @@ namespace passwordChecker.Core.Services.Implementations
             return breachesList;
         }
 
-        private IDictionary<string, int> ParseMatchingBreaches(string[] breachList)
+        private IDictionary<string, int> ParseMatchingBreachesAsync(string[] breachList)
         {
             var breachDictionary = new Dictionary<string, int>();
             foreach(var breach in breachList)

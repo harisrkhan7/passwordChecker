@@ -9,7 +9,7 @@ namespace passwordChecker.WebAPI.Messages.Responses
     /// Password strength enum
     /// </summary>
     [DataContract]
-    public enum PasswordStrengthResponse
+    public enum PasswordStrength
     {
         [EnumMember(Value = "Blank")]
         Blank = 0,
@@ -30,26 +30,26 @@ namespace passwordChecker.WebAPI.Messages.Responses
         /// </summary>
         /// <param name="passwordStrength">Business object to convert</param>
         /// <returns>Response message</returns>
-        public static PasswordStrengthResponse GetResponseMessage( this PasswordStrength passwordStrength)
+        public static PasswordStrength GetPasswordStrength( this Core.BusinessObjects.Enums.PasswordStrength passwordStrength)
         {
-            var passwordStrengthResponse = new PasswordStrengthResponse();
+            var passwordStrengthResponse = new PasswordStrength();
 
             switch(passwordStrength)
             {
-                case PasswordStrength.Blank:
-                    passwordStrengthResponse = PasswordStrengthResponse.Blank;
+                case Core.BusinessObjects.Enums.PasswordStrength.Blank:
+                    passwordStrengthResponse = PasswordStrength.Blank;
                     break;
-                case PasswordStrength.Weak:
-                    passwordStrengthResponse = PasswordStrengthResponse.Weak;
+                case Core.BusinessObjects.Enums.PasswordStrength.Weak:
+                    passwordStrengthResponse = PasswordStrength.Weak;
                     break;
-                case PasswordStrength.Medium:
-                    passwordStrengthResponse = PasswordStrengthResponse.Medium;
+                case Core.BusinessObjects.Enums.PasswordStrength.Medium:
+                    passwordStrengthResponse = PasswordStrength.Medium;
                     break;
-                case PasswordStrength.Strong:
-                    passwordStrengthResponse = PasswordStrengthResponse.Strong;
+                case Core.BusinessObjects.Enums.PasswordStrength.Strong:
+                    passwordStrengthResponse = PasswordStrength.Strong;
                     break;
-                case PasswordStrength.VeryStrong:
-                    passwordStrengthResponse = PasswordStrengthResponse.VeryStrong;
+                case Core.BusinessObjects.Enums.PasswordStrength.VeryStrong:
+                    passwordStrengthResponse = PasswordStrength.VeryStrong;
                     break;
                 default:
                     throw new Exception("Could not parse to response message! Case = " + passwordStrength);
