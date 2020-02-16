@@ -17,7 +17,7 @@ namespace passwordChecker.WebAPI.Controllers
         
         [HttpPost("CheckPassword")]
         [ProducesResponseType(typeof(PasswordStrengthResponse),StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ErrorResponse),StatusCodes.Status500InternalServerError)]
         public IActionResult CheckPassword(string password)
         {
             try
@@ -28,7 +28,8 @@ namespace passwordChecker.WebAPI.Controllers
             }
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                var error = ResponseManager.GetErrorResponse(ex);
+                return StatusCode(StatusCodes.Status500InternalServerError,error);
             }
         }
     }

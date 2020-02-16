@@ -12,6 +12,7 @@ run_console_application:
 	$(DOTNET_RUN_PROJECT) passwordChecker.ConsoleApp/passwordChecker.ConsoleApp.csproj
 	
 generate_client:
+	rm passwordChecker.WebAPI.Client/*.cs & 
 	$(AUTOREST_GENERATE) --csharp --input-file="swagger.json" \
 	--output-folder=passwordChecker.WebAPI.Client/ --namespace=passwordChecker.WebAPI.Client
 
